@@ -80,3 +80,25 @@ identical_outputs_test = analysistest.make(
         ),
     },
 )
+
+def _output_test_impl(ctx):
+    all_files = ctx.attr.target_under_test[DefaultInfo].files.to_list()[0].short_path
+    exe = ctx.outputs.executable
+    ctx.actions.expand_template(
+        output = exe,
+        template = ctx.file.output_checker,
+        is_executable = True,
+        substitutions = {
+            "%TARGET%": all_files,
+        },
+    )
+    return [DefaultInfo(runfiles = ctx.runfiles(files = ctx.attr.target_under_test[DefaultInfo].files.to_list()))]
+
+output_test = rule(
+    _output_test_impl,
+    test = True,
+    attrs = {
+        "target_under_test": attr.label(),
+        "output_checker": attr.label(default = "//rules/analysis_tests:output_checker.sh", allow_single_file = True),
+    },
+)
