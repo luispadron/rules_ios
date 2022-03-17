@@ -61,31 +61,11 @@ def _framework_middleman(ctx):
 
     # Adds the frameworks to the linker command
     dynamic_framework_provider = objc_provider_utils.merge_dynamic_framework_providers(ctx, dynamic_framework_providers)
-    linkopt = []
-    linkinput = []
-    all_dynamic_framework = dynamic_framework_provider.framework_files.to_list()
-    for f in all_dynamic_framework + objc_provider_fields.get("dynamic_framework_file", depset([])).to_list():
-        linkopt.append("\"-F" + "/".join(f.path.split("/")[:-2]) + "\"")
-
-        # TODO: can we just feed dynamic framework file
-        fw_name = f.basename.replace(".framework", "")
-        linkopt.append("-Wl,-framework," + fw_name)
-
-    #objc_provider_fields = {}
     objc_provider_fields["dynamic_framework_file"] = depset(
-        all_dynamic_framework,
-    )
-
-    objc_provider_fields["linkopt"] = depset(
-        linkopt,
-    )
-    objc_provider_fields["link_inputs"] = depset(
-        linkinput,
+        transitive = [dynamic_framework_provider.framework_files, objc_provider_fields.get("dynamic_framework_file", depset([]))],
     )
     objc_provider = apple_common.new_objc_provider(**objc_provider_fields)
-
     cc_info_provider = cc_common.merge_cc_infos(direct_cc_infos = [], cc_infos = cc_providers)
-
     providers = [
         dynamic_framework_provider,
         cc_info_provider,
