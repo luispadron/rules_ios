@@ -471,8 +471,10 @@ def apple_library(name, library_tools = {}, export_private_headers = True, names
             swift_sources.append(f)
         elif f.endswith((".cc", ".cpp")):
             cpp_sources.append(f)
-        else:
-            fail("Unable to compile %s in apple_framework %s" % (f, name))
+
+        # TODO: What should be the correct thing to do here?
+        # else:
+        # fail("Unable to compile %s in apple_framework %s" % (f, name))
 
     module_name = kwargs.pop("module_name", name)
     namespace = module_name if namespace_is_module_name else name
