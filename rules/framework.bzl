@@ -786,7 +786,7 @@ def _bundle_static_framework(ctx, outputs):
             infoplist = infoplist,
             minimum_os_version = str(current_apple_platform.target_os_version),
             platform_type = str(current_apple_platform.platform.platform_type),
-            product_type = ctx.attr._product_type,
+            product_type = ctx.attr.product_type,
             uses_swift = outputs.swiftmodule != None,
         ),
     ])
@@ -1019,7 +1019,10 @@ that this target depends on.
 If not given, the framework will be built for the platform it inherits from the target that uses
 the framework as a dependency.""",
         ),
-        "_product_type": attr.string(default = apple_product_type.static_framework),
+        "product_type": attr.string(
+            default = apple_product_type.static_framework,
+            doc = "The Apple product type for the framework. Defaults to static framework product type.",
+        ),
         "_xcode_config": attr.label(
             default = configuration_field(
                 name = "xcode_config_label",
