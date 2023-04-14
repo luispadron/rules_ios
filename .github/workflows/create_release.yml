@@ -25,14 +25,14 @@ jobs:
           COPYFILE_DISABLE=1 tar czvf "rules_ios.$TAG.tar.gz" ./*
 
           # Create the release notes
-          ./.github/workflows/generate_release_notes.sh "$TAG" | tee notes.md
+          release_notes=$(./.github/workflows/generate_release_notes.sh "$TAG")
 
           # Create the release
           gh release create "$TAG" \
             --title "$TAG" \
             --target "$GITHUB_REF_NAME" \
             --generate-notes \
-            --notes-file notes.md \
+            --notes "$release_notes" \
             "rules_ios.$TAG.tar.gz"
         env:
           TAG: ${{ inputs.tag }}
